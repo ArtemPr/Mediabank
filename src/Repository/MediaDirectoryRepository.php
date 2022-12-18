@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\MediaDirectory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +40,29 @@ class MediaDirectoryRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return MediaDirectory[] Returns an array of MediaDirectory objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @param $pid
+     * @return int|null
+     */
+    public function getMaxOrderNumber($pid): ?int
+    {
+        $qb = $this->createQueryBuilder('mediaDirectory')
+            ->select('MAX(mediaDirectory.order_number) AS number')
+            ->where('mediaDirectory.pid = :pid')
+            ->setParameters(
+                [
+                    'pid' => $pid
+                ]
+            );
+        $query = $qb->getQuery();
+        $result = $query->execute(
+            hydrationMode: Query::HYDRATE_ARRAY
+        );
 
-//    public function findOneBySomeField($value): ?MediaDirectory
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if (null !== $result) {
+            return $result['0']['number'];
+        }
+        
+        return null;
+    }
 }

@@ -23,9 +23,6 @@ class MediaContent
     #[ORM\Column]
     private ?bool $delete = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?MediaDirectory $directory = null;
-
     #[ORM\Column]
     private ?int $uploaded_user = null;
 
@@ -52,6 +49,10 @@ class MediaContent
 
     #[ORM\OneToOne(mappedBy: 'media_content', cascade: ['persist', 'remove'])]
     private ?ImgMediaContent $imgVideoContent = null;
+
+    #[ORM\ManyToOne(inversedBy: 'mediaContents')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?MediaDirectory $directory = null;
 
     public function getId(): ?int
     {
@@ -90,18 +91,6 @@ class MediaContent
     public function setDelete(bool $delete): self
     {
         $this->delete = $delete;
-
-        return $this;
-    }
-
-    public function getDirectory(): ?MediaDirectory
-    {
-        return $this->directory;
-    }
-
-    public function setDirectory(?MediaDirectory $directory): self
-    {
-        $this->directory = $directory;
 
         return $this;
     }
@@ -225,6 +214,18 @@ class MediaContent
         }
 
         $this->imgVideoContent = $imgVideoContent;
+
+        return $this;
+    }
+
+    public function getDirectory(): ?MediaDirectory
+    {
+        return $this->directory;
+    }
+
+    public function setDirectory(?MediaDirectory $directory): self
+    {
+        $this->directory = $directory;
 
         return $this;
     }
