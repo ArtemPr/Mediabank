@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\MediaContent;
 use App\Entity\VideoMediaContent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +41,23 @@ class VideoMediaContentRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return VideoMediaContent[] Returns an array of VideoMediaContent objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('v')
-//            ->andWhere('v.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('v.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?VideoMediaContent
-//    {
-//        return $this->createQueryBuilder('v')
-//            ->andWhere('v.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @param MediaContent $content
+     * @return array
+     */
+    public function getContent(MediaContent $content): ?array
+    {
+        $qb = $this->createQueryBuilder('videoMediaContent')
+            ->where('videoMediaContent.media_content = :content')
+            ->setParameters(
+                [
+                    'content' => $content
+                ]
+            );
+        $out = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+        return $out[0] ?? null;
+    }
 }

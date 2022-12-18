@@ -12,6 +12,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/media_content', name: 'api_')]
 class MediaContentController extends AbstractController
@@ -54,11 +57,14 @@ class MediaContentController extends AbstractController
     #[Route('/{id}', name: 'media_content_item_get', methods: ['GET'])]
     public function getContent(
         MediaContentRepository $mediaContentRepository,
+        SerializerInterface $serializer,
         $id
     ): Response
     {
+        $media = $mediaContentRepository->getContent((int)$id);
+
         return $this->json(
-            $mediaContentRepository->find($id)
+            $media
         );
     }
 

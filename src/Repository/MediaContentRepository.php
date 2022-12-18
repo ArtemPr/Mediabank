@@ -2,8 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\ImgMediaContent;
 use App\Entity\MediaContent;
+use App\Entity\TextMediaContent;
+use App\Entity\VideoMediaContent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,8 +43,34 @@ class MediaContentRepository extends ServiceEntityRepository
         }
     }
 
-    public function getAllContent(): ?array
+    /**
+     * @param int $id
+     * @return array|null
+     */
+    public function getContent(int $id): ?array
     {
-        return [];
+        $qb = $this->createQueryBuilder('mediaContent')
+            ->where('mediaContent.id = :id')
+            ->leftJoin('mediaContent.directory', 'directory')->addSelect('directory')
+            ->setParameters([
+                'id' => $id
+            ])
+        ;
+
+        $content = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+
+        $content = $content[0] ?? null;
+
+        if (null !== $content) {
+            $content['info'] = match ($content['type']) {
+                1 => $this->getEntityManager()->getRepository(ImgMediaContent::class)->getContent($this->find($id)),
+                2 => $this->getEntityManager()->getRepository(VideoMediaContent::class)->getContent($this->find($id)),
+                3 => $this->getEntityManager()->getRepository(TextMediaContent::class)->getContent($this->find($id)),
+            };
+        }
+        return $content;
     }
 }

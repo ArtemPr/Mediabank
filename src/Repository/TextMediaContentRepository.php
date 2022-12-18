@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\MediaContent;
 use App\Entity\TextMediaContent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -38,29 +40,23 @@ class TextMediaContentRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-//    /**
-//     * @return TextMediaContent[] Returns an array of TextMediaContent objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?TextMediaContent
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @param MediaContent $content
+     * @return array
+     */
+    public function getContent(MediaContent $content): ?array
+    {
+        $qb = $this->createQueryBuilder('textMediaContent')
+            ->where('textMediaContent.media_content\ = :content')
+            ->setParameters(
+                [
+                    'content' => $content
+                ]
+            );
+        $out = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+        return $out[0] ?? null;
+    }
 }

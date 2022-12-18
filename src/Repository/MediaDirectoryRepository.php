@@ -62,7 +62,7 @@ class MediaDirectoryRepository extends ServiceEntityRepository
         if (null !== $result) {
             return $result['0']['number'];
         }
-        
+
         return null;
     }
 }

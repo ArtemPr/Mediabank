@@ -48,7 +48,7 @@ class MediaContent
     private ?VideoMediaContent $videoMediaContent = null;
 
     #[ORM\OneToOne(mappedBy: 'media_content', cascade: ['persist', 'remove'])]
-    private ?ImgMediaContent $imgVideoContent = null;
+    private ?ImgMediaContent $imgMediaContent = null;
 
     #[ORM\ManyToOne(inversedBy: 'mediaContents')]
     #[ORM\JoinColumn(nullable: false)]
@@ -201,19 +201,19 @@ class MediaContent
         return $this;
     }
 
-    public function getImgVideoContent(): ?ImgMediaContent
+    public function getImgMediaContent(): ?ImgMediaContent
     {
-        return $this->imgVideoContent;
+        return $this->imgMediaContent;
     }
 
-    public function setImgVideoContent(ImgMediaContent $imgVideoContent): self
+    public function setImgMediaContent(ImgMediaContent $imgMediaContent): self
     {
         // set the owning side of the relation if necessary
-        if ($imgVideoContent->getMediaContent() !== $this) {
-            $imgVideoContent->setMediaContent($this);
+        if ($imgMediaContent->getMediaContent() !== $this) {
+            $imgMediaContent->setMediaContent($this);
         }
 
-        $this->imgVideoContent = $imgVideoContent;
+        $this->imgMediaContent = $imgMediaContent;
 
         return $this;
     }

@@ -2,8 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\ImgMediaContent;
 use App\Entity\MediaContent;
 use App\Entity\MediaDirectory;
+use App\Entity\TextMediaContent;
+use App\Entity\VideoMediaContent;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,6 +57,7 @@ class MediaContentService
     {
         extract($data);
         if (null !== $name && null !== $file_name && null !== $file && null !== $directory) {
+            $type = 1;
             $content->setName($name);
             $content->setDirectory($directory);
             $content->setLink($file_name);
@@ -63,9 +67,49 @@ class MediaContentService
             $content->setType(1);
             $entityManager->persist($content);
             $entityManager->flush();
+
+            $itemContent = match ($type) {
+                1 => $this->writeImageMediaContent((int)$content->getId(), $data),
+                2 => $this->writeVideoMediaContent((int)$content->getId(), $data),
+                3 => $this->writeTextMediaContent((int)$content->getId(), $data),
+            };
+
             return $content;
         } else {
             return null;
         }
+    }
+
+    /**
+     * @TODO Дописать чтение
+     * @param int $id
+     * @param array $data
+     * @return array|null
+     */
+    private function writeImageMediaContent(int $id, array $data): ?array
+    {
+        return [];
+    }
+
+    /**
+     * @TODO дописать чтение
+     * @param int $id
+     * @param array $data
+     * @return array|null
+     */
+    private function writeVideoMediaContent(int $id, array $data): ?array
+    {
+        return [];
+    }
+
+    /**
+     * @TODO дописать чтение
+     * @param int $id
+     * @param array $data
+     * @return array|null
+     */
+    private function writeTextMediaContent(int $id, array $data): ?array
+    {
+        return [];
     }
 }

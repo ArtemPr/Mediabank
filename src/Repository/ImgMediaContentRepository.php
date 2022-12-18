@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\ImgMediaContent;
+use App\Entity\MediaContent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +41,23 @@ class ImgMediaContentRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return ImgMediaContent[] Returns an array of ImgMediaContent objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('i.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?ImgMediaContent
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @param MediaContent $content
+     * @return array
+     */
+    public function getContent(MediaContent $content): ?array
+    {
+        $qb = $this->createQueryBuilder('imgMediaContent')
+            ->where('imgMediaContent.media_content = :content')
+            ->setParameters(
+                [
+                    'content' => $content
+                ]
+            );
+        $out = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+        return $out[0] ?? null;
+    }
 }
