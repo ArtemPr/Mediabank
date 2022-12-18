@@ -56,7 +56,7 @@ class MediaDirectoryController extends AbstractController
     ): Response
     {
         return $this->json(
-            $mediaDirectoryRepository->find($id)
+            $mediaDirectoryRepository->getDirectory((int)$id)
         );
     }
 

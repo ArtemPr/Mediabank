@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\MediaDirectory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -64,5 +65,27 @@ class MediaDirectoryRepository extends ServiceEntityRepository
         }
 
         return null;
+    }
+
+    /**
+     * @param int $id
+     * @return array|null
+     */
+    public function getDirectory(int $id): ?array
+    {
+        $qb = $this->createQueryBuilder('mediaDirectory')
+            ->where('mediaDirectory.id = :id')
+            ->setParameters(
+                [
+                    'id' => $id
+                ]
+            );
+
+        $result = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+
+        return $result;
     }
 }
