@@ -30,6 +30,8 @@ class ApiAuthenticator extends AbstractAuthenticator
 
     public function authenticate(Request $request): Passport
     {
+        //#[\SensitiveParameter]
+        $apiToken = '';
         $apiToken = $request->headers->get('token');
 
         if (null === $apiToken) {

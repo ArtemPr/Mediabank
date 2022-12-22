@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\MediaDirectory;
+use App\Repository\MediaContentRepository;
 use App\Repository\MediaDirectoryRepository;
 use App\Service\MediaDirectoryService;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,11 +54,25 @@ class MediaDirectoryController extends AbstractController
     #[Route('/{id}', name: 'media_directory_item_get', methods: ['GET'])]
     public function getDirectory(
         MediaDirectoryRepository $mediaDirectoryRepository,
+        MediaContentRepository $mediaContentRepository,
         $id
     ): Response
     {
+        $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
+            ->leftJoin('mediaDirectory.mediaContents', 'mediaContents')->addSelect('mediaContents')
+            ->where('mediaDirectory.id = :id')
+            ->setParameters(
+                [
+                    'id' => $id
+                ]
+            );
+        $result = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+
         return $this->json(
-            $mediaDirectoryRepository->getDirectory((int)$id)
+            $result
         );
     }
 
