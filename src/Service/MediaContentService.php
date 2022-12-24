@@ -2,11 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\ImgMediaContent;
 use App\Entity\MediaContent;
 use App\Entity\MediaDirectory;
-use App\Entity\TextMediaContent;
-use App\Entity\VideoMediaContent;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;

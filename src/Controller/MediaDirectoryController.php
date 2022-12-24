@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\MediaDirectory;
-use App\Repository\MediaContentRepository;
 use App\Repository\MediaDirectoryRepository;
 use App\Service\MediaDirectoryService;
 use Doctrine\ORM\AbstractQuery;
@@ -54,7 +53,6 @@ class MediaDirectoryController extends AbstractController
     #[Route('/{id}', name: 'media_directory_item_get', methods: ['GET'])]
     public function getDirectory(
         MediaDirectoryRepository $mediaDirectoryRepository,
-        MediaContentRepository $mediaContentRepository,
         $id
     ): Response
     {

@@ -40,10 +40,9 @@ class MediaDirectoryService
         if (null !== $name) {
             $orderNumber = $entityManager->getRepository(MediaDirectory::class)
                 ->getMaxOrderNumber($data['pid']) ?? 1;
-            ++$orderNumber;
             $directory->setName($name);
             $directory->setPid($data['pid'] ?? 0);
-            $directory->setOrderNumber($orderNumber);
+            $directory->setOrderNumber(++$orderNumber);
             $entityManager->persist($directory);
             $entityManager->flush();
             return $directory;

@@ -2,11 +2,22 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-class BaseController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
+class BaseController extends AbstractController
 {
-    #[Route('/', name: 'app_main')]
+    #[Route(
+        [
+            '/',
+            '/api'
+        ],
+        name: 'api_lock',
+        methods: [
+            'GET',
+            'POST'
+        ]
+    )]
     public function index()
     {
         return $this->json([]);
