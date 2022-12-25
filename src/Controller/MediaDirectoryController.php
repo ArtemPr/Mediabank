@@ -18,7 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class MediaDirectoryController extends AbstractController
 {
     /**
-     * @TODO Дописать функционал
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @return Response
@@ -53,9 +52,17 @@ class MediaDirectoryController extends AbstractController
     #[Route('/{id}', name: 'media_directory_item_get', methods: ['GET'])]
     public function getDirectory(
         MediaDirectoryRepository $mediaDirectoryRepository,
+        MediaDirectoryService $mediaDirectoryService,
         $id
     ): Response
     {
+        if ((int)$id === 0) {
+            $mediaDirectoryService->showTree($mediaDirectoryRepository);
+
+            return $this->json(
+                $mediaDirectoryService::$tree
+            );
+        }
         $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
             ->leftJoin('mediaDirectory.mediaContents', 'mediaContents')->addSelect('mediaContents')
             ->where('mediaDirectory.id = :id')
@@ -75,7 +82,6 @@ class MediaDirectoryController extends AbstractController
     }
 
     /**
-     * @TODO Добавить функционал
      * @param Request $request
      * @param MediaDirectoryRepository $mediaDirectoryRepository
      * @param EntityManagerInterface $entityManager

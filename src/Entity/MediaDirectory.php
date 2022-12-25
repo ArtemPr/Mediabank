@@ -102,4 +102,5 @@ class MediaDirectory
 
         return $this;
     }
+
 }
