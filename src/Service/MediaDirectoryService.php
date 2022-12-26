@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\MediaDirectory;
+use App\Repository\MediaContentRepository;
 use App\Repository\MediaDirectoryRepository;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,7 +57,8 @@ class MediaDirectoryService
     }
 
     public function showTree(
-        MediaDirectoryRepository $mediaDirectoryRepository
+        MediaDirectoryRepository $mediaDirectoryRepository,
+        MediaContentRepository $mediaContentRepository
     ): void
     {
         $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
@@ -65,10 +67,23 @@ class MediaDirectoryService
             ->getResult();
 
         foreach ($out as $item) {
+
+            $qb_item = $mediaContentRepository->createQueryBuilder('mediaContent')
+                ->select('COUNT(mediaContent.id) AS cid')
+                ->leftJoin('mediaContent.directory', 'directory')
+                ->where('directory.id = :id')
+                ->setParameters(
+                    [
+                        'id' => $item->getId()
+                    ]
+                );
+            $count = $qb_item->getQuery()->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+
             self::$tree[$item->getPid()][] =
                 [
                     'id' => $item->getId(),
-                    'name' => $item->getName()
+                    'name' => $item->getName() . ' ('.$count['0']['cid'].')'
                 ];
         }
     }

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\MediaContent;
 use App\Entity\MediaDirectory;
+use App\Repository\MediaContentRepository;
 use App\Repository\MediaDirectoryRepository;
 use App\Service\MediaDirectoryService;
 use Doctrine\ORM\AbstractQuery;
@@ -53,11 +55,12 @@ class MediaDirectoryController extends AbstractController
     public function getDirectory(
         MediaDirectoryRepository $mediaDirectoryRepository,
         MediaDirectoryService $mediaDirectoryService,
+        MediaContentRepository $mediaContentRepository,
         $id
     ): Response
     {
         if ((int)$id === 0) {
-            $mediaDirectoryService->showTree($mediaDirectoryRepository);
+            $mediaDirectoryService->showTree($mediaDirectoryRepository, $mediaContentRepository);
 
             return $this->json(
                 $mediaDirectoryService::$tree
