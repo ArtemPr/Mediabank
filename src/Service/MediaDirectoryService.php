@@ -83,7 +83,8 @@ class MediaDirectoryService
             self::$tree[$item->getPid()][] =
                 [
                     'id' => $item->getId(),
-                    'name' => $item->getName() . ' ('.$count['0']['cid'].')'
+                    'name' => $item->getName(),
+                    'count_elem' => $count['0']['cid'] ?? 0
                 ];
         }
     }
