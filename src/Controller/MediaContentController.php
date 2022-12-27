@@ -8,11 +8,12 @@ use App\Entity\MediaContent;
 use App\Repository\MediaContentRepository;
 use App\Service\MediaContentService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/media_content', name: 'api_')]
 class MediaContentController extends AbstractController
@@ -20,10 +21,9 @@ class MediaContentController extends AbstractController
     /**
      * @param Request $request
      * @param EntityManagerInterface $entityManager
-     * @param MediaContentRepository $mediaContentRepository
      * @return Response
-     * @throws \Doctrine\ORM\Exception\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     #[Route('/{id}', name: 'media_content_post', methods: ['POST'])]
     public function addContent(
@@ -55,7 +55,6 @@ class MediaContentController extends AbstractController
     #[Route('/{id}', name: 'media_content_item_get', methods: ['GET'])]
     public function getContent(
         MediaContentRepository $mediaContentRepository,
-        SerializerInterface $serializer,
         $id
     ): Response
     {
