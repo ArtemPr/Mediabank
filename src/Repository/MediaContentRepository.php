@@ -75,4 +75,19 @@ class MediaContentRepository extends ServiceEntityRepository
         }
         return $content;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getMaxId(): ?int
+    {
+        $qb = $this->createQueryBuilder('mediaContent')
+            ->select('MAX(mediaContent.id) as max_id');
+        $return = $qb->getQuery()
+            ->getResult(
+                AbstractQuery::HYDRATE_ARRAY
+            );
+
+        return $return[0]['id'] ?? null;
+    }
 }

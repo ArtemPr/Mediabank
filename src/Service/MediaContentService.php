@@ -114,4 +114,19 @@ class MediaContentService
     {
         return [];
     }
+
+    /**
+     * @TODO -
+     * @param \App\Service\TypeMediaContentService $typeMediaContentService
+     * @return array
+     */
+    private function directoryOperations(
+        TypeMediaContentService $typeMediaContentService
+    ): array
+    {
+        return [
+            'type_id' => $typeMediaContentService::TYPE_ID,
+            'directory_id' => $typeMediaContentService::DIRECTORY_ID
+        ];
+    }
 }
