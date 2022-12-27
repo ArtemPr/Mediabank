@@ -30,10 +30,11 @@ class ApiToken
         return $this->token;
     }
 
-    public function setToken(string $token): self
+    public function setToken(string $token): object
     {
         $this->token = $token;
 
+        /** @var object $this */
         return $this;
     }
 

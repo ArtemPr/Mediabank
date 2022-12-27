@@ -40,9 +40,10 @@ class TextMediaContentRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
     /**
      * @param MediaContent $content
-     * @return array
+     * @return array|null
      */
     public function getContent(MediaContent $content): ?array
     {

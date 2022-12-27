@@ -16,7 +16,7 @@ class MediaDirectoryService
     public function setData(
         Request $request,
         EntityManagerInterface $entityManager
-    )
+    ): ?array
     {
         if ($request->request->has('name') && $request->request->has('directory')) {
             $data['name'] = $request->get('name');
@@ -89,11 +89,17 @@ class MediaDirectoryService
         }
     }
 
+    /**
+     * @param MediaDirectoryRepository $mediaDirectoryRepository
+     * @param int|null $pid
+     * @param int|null $level
+     * @return mixed
+     */
     private function getLevel(
         MediaDirectoryRepository $mediaDirectoryRepository,
-        ?int $pid = 0,
-        ?int $level = 0
-    )
+        ?int $pid,
+        ?int $level
+    ): mixed
     {
         $level = $level === 1 ? $level : ++$level;
         $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')

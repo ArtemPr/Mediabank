@@ -4,8 +4,11 @@ namespace App\Service;
 
 use App\Entity\MediaContent;
 use App\Entity\MediaDirectory;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Request;
 
 class MediaContentService
@@ -43,8 +46,8 @@ class MediaContentService
      * @param MediaContent $content
      * @param EntityManager $entityManager
      * @return MediaContent|null
-     * @throws \Doctrine\ORM\Exception\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function writeContent(
         array $data,
@@ -58,14 +61,14 @@ class MediaContentService
             $content->setName($name);
             $content->setDirectory($directory);
             $content->setLink($file_name);
-            $content->setDateCreate(new \DateTime());
+            $content->setDateCreate(new DateTime());
             $content->setDelete(false);
             $content->setUploadedUser(1);
             $content->setType(1);
             $entityManager->persist($content);
             $entityManager->flush();
 
-            $itemContent = match ($type) {
+            match ($type) {
                 1 => $this->writeImageMediaContent((int)$content->getId(), $data),
                 2 => $this->writeVideoMediaContent((int)$content->getId(), $data),
                 3 => $this->writeTextMediaContent((int)$content->getId(), $data),
@@ -78,7 +81,7 @@ class MediaContentService
     }
 
     /**
-     * @TODO Дописать чтение
+     * @TODO Дописать
      * @param int $id
      * @param array $data
      * @return array|null
@@ -89,7 +92,7 @@ class MediaContentService
     }
 
     /**
-     * @TODO дописать чтение
+     * @TODO дописать
      * @param int $id
      * @param array $data
      * @return array|null
@@ -100,7 +103,7 @@ class MediaContentService
     }
 
     /**
-     * @TODO дописать чтение
+     * @TODO дописать
      * @param int $id
      * @param array $data
      * @return array|null

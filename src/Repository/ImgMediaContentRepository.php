@@ -43,7 +43,7 @@ class ImgMediaContentRepository extends ServiceEntityRepository
 
     /**
      * @param MediaContent $content
-     * @return array
+     * @return array|null
      */
     public function getContent(MediaContent $content): ?array
     {

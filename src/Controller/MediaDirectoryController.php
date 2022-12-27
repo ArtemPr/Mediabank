@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\MediaContent;
 use App\Entity\MediaDirectory;
 use App\Repository\MediaContentRepository;
 use App\Repository\MediaDirectoryRepository;
@@ -48,6 +47,8 @@ class MediaDirectoryController extends AbstractController
 
     /**
      * @param MediaDirectoryRepository $mediaDirectoryRepository
+     * @param MediaDirectoryService $mediaDirectoryService
+     * @param MediaContentRepository $mediaContentRepository
      * @param $id
      * @return Response
      */

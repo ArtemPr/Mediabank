@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\MediaDirectory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -57,7 +56,7 @@ class MediaDirectoryRepository extends ServiceEntityRepository
             );
         $query = $qb->getQuery();
         $result = $query->execute(
-            hydrationMode: Query::HYDRATE_ARRAY
+            hydrationMode: AbstractQuery::HYDRATE_ARRAY
         );
 
         if (null !== $result) {
@@ -81,11 +80,9 @@ class MediaDirectoryRepository extends ServiceEntityRepository
                 ]
             );
 
-        $result = $qb->getQuery()
+        return $qb->getQuery()
             ->getResult(
                 AbstractQuery::HYDRATE_ARRAY
             );
-
-        return $result;
     }
 }

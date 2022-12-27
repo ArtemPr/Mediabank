@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MediaContentRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -18,7 +19,7 @@ class MediaContent
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_create = null;
+    private ?DateTimeInterface $date_create = null;
 
     #[ORM\Column]
     private ?bool $delete = null;
@@ -33,10 +34,10 @@ class MediaContent
     private ?string $link = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_update = null;
+    private ?DateTimeInterface $date_update = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_approval = null;
+    private ?DateTimeInterface $date_approval = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $approval_user = null;
@@ -71,12 +72,12 @@ class MediaContent
         return $this;
     }
 
-    public function getDateCreate(): ?\DateTimeInterface
+    public function getDateCreate(): ?DateTimeInterface
     {
         return $this->date_create;
     }
 
-    public function setDateCreate(\DateTimeInterface $date_create): self
+    public function setDateCreate(DateTimeInterface $date_create): self
     {
         $this->date_create = $date_create;
 
@@ -131,24 +132,24 @@ class MediaContent
         return $this;
     }
 
-    public function getDateUpdate(): ?\DateTimeInterface
+    public function getDateUpdate(): ?DateTimeInterface
     {
         return $this->date_update;
     }
 
-    public function setDateUpdate(\DateTimeInterface $date_update): self
+    public function setDateUpdate(DateTimeInterface $date_update): self
     {
         $this->date_update = $date_update;
 
         return $this;
     }
 
-    public function getDateApproval(): ?\DateTimeInterface
+    public function getDateApproval(): ?DateTimeInterface
     {
         return $this->date_approval;
     }
 
-    public function setDateApproval(\DateTimeInterface $date_approval): self
+    public function setDateApproval(DateTimeInterface $date_approval): self
     {
         $this->date_approval = $date_approval;
 

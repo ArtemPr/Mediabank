@@ -21,7 +21,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 {
     public function __construct(
         ManagerRegistry $registry,
-        private ApiTokenRepository $apiTokenRepository
+        private readonly ApiTokenRepository $apiTokenRepository
     )
     {
         parent::__construct($registry, User::class);

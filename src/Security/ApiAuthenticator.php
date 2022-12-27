@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 class ApiAuthenticator extends AbstractAuthenticator
 {
     public function __construct(
-        private UserRepository $userRepository
+        private readonly UserRepository $userRepository
     )
     {
     }
@@ -31,7 +31,6 @@ class ApiAuthenticator extends AbstractAuthenticator
     public function authenticate(Request $request): Passport
     {
         //#[\SensitiveParameter]
-        $apiToken = '';
         $apiToken = $request->headers->get('token');
 
         if (null === $apiToken) {
