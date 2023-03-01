@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use Symfony\Component\DomCrawler\Image;
 use Symfony\Component\HttpFoundation\Request;
 
 class MediaContentService
@@ -36,6 +37,12 @@ class MediaContentService
         EntityManagerInterface $entityManager
     ): ?array
     {
+//        return [
+//            'request' => $request->request,
+//            'files' => $request->files,
+//            'post' => $_POST,
+//        ];
+
         if ($request->request->has('name') && $request->request->has('directory')) {
             $data['name'] = $request->get('name');
             $data['file_name'] = $request->get('file_name') ?? null;
@@ -52,12 +59,22 @@ class MediaContentService
             // Загрузка файла
             // Если не мультиимпорт, то надо сначала к нам таки загрузить файл
             if (!$request->request->has('is_multiimport') || 1 != $request->request->get('is_multiimport')) {
-                //
+                // поле: uploaded_file
+                if ($request->files->has('uploaded_file')) {
+                    $uploadedContent = $request->files->get('uploaded_file');
+
+                    dd([
+                        '$uploadedContent' => $uploadedContent ?? '-',
+                    ]);
+
+                    $uploadedImage = null;
+                }
             }
 
             return $data;
         }
-        return null;
+
+        return [];
     }
 
     /**
