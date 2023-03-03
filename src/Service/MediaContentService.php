@@ -12,7 +12,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Symfony\Component\DomCrawler\Image;
 use Symfony\Component\HttpFoundation\Request;
 
 class MediaContentService
@@ -31,7 +30,6 @@ class MediaContentService
      * @param EntityManagerInterface $entityManager
      * @return array|null
      */
-    // @TODO дописать загрузку файла
     public function setData(
         Request $request,
         EntityManagerInterface $entityManager
@@ -42,16 +40,9 @@ class MediaContentService
         /*
          * В этом месте, как оказалось, при любом импорте, приходит только в $_POST и в $_FILES (если последнее необходимо),
          * а в $request этих данных нет. Поэтому здесь и далее используются $_POST и $_FILES (если последнее необходимо).
+         *
+         * FILTER_SANITIZE_STRING is deprecated as of PHP 8.1.0, use htmlspecialchars() instead.
          */
-//        return [
-//            'request' => $request,
-//            'files' => $request->files,
-//            '$_POST' => $_POST,
-//            '$_FILES' => $_FILES,
-//        ];
-
-        // FILTER_SANITIZE_STRING is deprecated as of PHP 8.1.0, use htmlspecialchars() instead.
-
         $data['name'] = htmlspecialchars($_POST['name']) ?? '';
         $directory = htmlspecialchars($_POST['directory']) ?? '';
 
@@ -125,8 +116,6 @@ class MediaContentService
                 2 => $this->writeVideoMediaContent((int)$content->getId(), $data, $entityManager),
                 3 => $this->writeTextMediaContent((int)$content->getId(), $data, $entityManager),
             };
-
-//            error_log('[ ] $writeResult: '.var_export($writeResult, true), 0);
 
             if (empty($writeResult)) {
                 return null;
