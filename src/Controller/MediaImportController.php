@@ -42,7 +42,7 @@ class MediaImportController extends AbstractController
 
         $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
 
-//        dd([
+//        return $this->json([
 //            'request' => $request->request->count(),
 //            'files' => $request->files->count(),
 //            'content' => $request->getContent(),
@@ -56,10 +56,6 @@ class MediaImportController extends AbstractController
                 $request,
                 $entityManager
             );
-
-//            dd([
-//                'data' => $data
-//            ]);
 
             if (empty($data)) {
                 return $this->json([

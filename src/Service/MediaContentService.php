@@ -37,38 +37,45 @@ class MediaContentService
         EntityManagerInterface $entityManager
     ): ?array
     {
+        $data = [];
+
+        /*
+         * В этом месте, как оказалось, при любом импорте, приходит только в $_POST и в $_FILES (если последнее необходимо),
+         * а в $request этих данных нет. Поэтому здесь и далее используются $_POST и $_FILES (если последнее необходимо).
+         */
 //        return [
-//            'request' => $request->request,
+//            'request' => $request,
 //            'files' => $request->files,
-//            'post' => $_POST,
+//            '$_POST' => $_POST,
+//            '$_FILES' => $_FILES,
 //        ];
 
-        if ($request->request->has('name') && $request->request->has('directory')) {
-            $data['name'] = $request->get('name');
-            $data['file_name'] = $request->get('file_name') ?? null;
-            $data['file'] = $request->get('file') ?? null;
-            $directory = $request->get('directory');
-            if (null !== $directory) {
-                $data['directory'] = $entityManager->getRepository(MediaDirectory::class)->find($directory) ?? null;
-            }
+        // FILTER_SANITIZE_STRING is deprecated as of PHP 8.1.0, use htmlspecialchars() instead.
 
-            if ($request->request->has('is_multiimport')) {
+        $data['name'] = htmlspecialchars($_POST['name']) ?? '';
+        $directory = htmlspecialchars($_POST['directory']) ?? '';
+
+        if (!empty($data['name']) && !empty($directory)) {
+            $data['file_name'] = htmlspecialchars($_POST['file_name']) ?? '';
+            $data['file'] = htmlspecialchars($_POST['file']) ?? '';
+            $data['directory'] = $entityManager->getRepository(MediaDirectory::class)->find($directory) ?? null;
+
+            $isMultiimport = filter_input(INPUT_POST, 'is_multiimport', FILTER_SANITIZE_NUMBER_INT, [
+                'options' => [
+                    'default' => 0,
+                ],
+            ]);
+
+            if (!empty($isMultiimport)) {
                 $data['is_multiimport'] = intval($request->request->get('is_multiimport'));
             }
 
             // Загрузка файла
             // Если не мультиимпорт, то надо сначала к нам таки загрузить файл
-            if (!$request->request->has('is_multiimport') || 1 != $request->request->get('is_multiimport')) {
-                // поле: uploaded_file
-                if ($request->files->has('uploaded_file')) {
-                    $uploadedContent = $request->files->get('uploaded_file');
+            if (empty($isMultiimport) && !empty($_FILES['uploaded_file']) && UPLOAD_ERR_OK == $_FILES['uploaded_file']['error']) {
+                $data['uploaded_file'] = $_FILES['uploaded_file'];
 
-                    dd([
-                        '$uploadedContent' => $uploadedContent ?? '-',
-                    ]);
-
-                    $uploadedImage = null;
-                }
+                $data['uploaded_file_exists'] = file_exists($_FILES['uploaded_file']['tmp_name']);
             }
 
             return $data;
@@ -94,6 +101,9 @@ class MediaContentService
     ): ?MediaContent
     {
         extract($data);
+        //
+        // Далее в методе встретится snake_case, т.к. используется extract из массива!
+        //
         if (null !== $name && null !== $file_name && null !== $file && null !== $directory) {
             $type = 1;
             $content->setName($name);
@@ -104,17 +114,19 @@ class MediaContentService
             $content->setUploadedUser(1);
             $content->setType(1);
 
-            $entityManager->persist($content);
-            $entityManager->flush();
-
             // Первое приближение же
             $this->mediaDir = $_SERVER['DOCUMENT_ROOT'].'/mediabank';
+
+            $entityManager->persist($content);
+            $entityManager->flush();
 
             $writeResult = match ($type) {
                 1 => $this->writeImageMediaContent((int)$content->getId(), $data, $entityManager),
                 2 => $this->writeVideoMediaContent((int)$content->getId(), $data, $entityManager),
                 3 => $this->writeTextMediaContent((int)$content->getId(), $data, $entityManager),
             };
+
+//            error_log('[ ] $writeResult: '.var_export($writeResult, true), 0);
 
             if (empty($writeResult)) {
                 return null;
@@ -139,11 +151,13 @@ class MediaContentService
         $copyTo = $this->mediaDir.'/hight';
 
         if (!empty($data['is_multiimport'])) {
-            $copyFrom = self::MULTI_IMPORT_DIR;
+            $copyFrom = self::MULTI_IMPORT_DIR.'/'.$data['file_name'];
+        } else {
+            $copyFrom = $data['uploaded_file']['tmp_name'];
         }
 
         // Check file exists
-        if (!file_exists($copyFrom.'/'.$data['file_name'])) {
+        if (!file_exists($copyFrom)) {
             return false;
         }
 
@@ -153,7 +167,7 @@ class MediaContentService
         }
 
         // Copy file
-        if (false === copy($copyFrom.'/'.$data['file_name'], $copyTo.'/'.$newFilename)) {
+        if (false === copy($copyFrom, $copyTo.'/'.$newFilename)) {
             return false;
         }
 
