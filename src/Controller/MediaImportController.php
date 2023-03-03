@@ -23,11 +23,18 @@ class MediaImportController extends AbstractController
     {
         $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
 
-        if (!empty($_POST)) {
+        if (!empty($request->request)) {
             $data = (new MediaContentService)->setData(
                 $request,
                 $entityManager
             );
+
+            if (empty($data)) {
+                return $this->json([
+                    'success' => false,
+                    'error' => 'Empty processed data!',
+                ]);
+            }
 
             return $this->json(
                 [
