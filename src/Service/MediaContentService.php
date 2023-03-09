@@ -50,11 +50,9 @@ class MediaContentService
             $data['file_name'] = htmlspecialchars($_POST['file_name']) ?? '';
             $data['file'] = htmlspecialchars($_POST['file']) ?? '';
             $data['directory'] = $entityManager->getRepository(MediaDirectory::class)->find($directory) ?? null;
-            $data['uploaded_by'] = filter_input(INPUT_POST, 'uploaded_by', FILTER_SANITIZE_NUMBER_INT, [
-                'options' => [
-                    'default' => 0,
-                ],
-            ]);
+            $data['uploaded_by'] = !empty($_POST['uploaded_by'])
+                ? intval($_POST['uploaded_by'])
+                : 0;
             $isMultiimport = filter_input(INPUT_POST, 'is_multiimport', FILTER_SANITIZE_NUMBER_INT, [
                 'options' => [
                     'default' => 0,
