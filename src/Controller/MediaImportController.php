@@ -10,7 +10,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/media_import', name: 'api_')]
@@ -36,15 +35,14 @@ class MediaImportController extends AbstractController
                 ]);
             }
 
-            return $this->json(
-                [
-                    (new MediaContentService)->writeContent(
-                        $data,
-                        new MediaContent(),
-                        $entityManager
-                    ) ?->getId()
-                ]
-            );
+            return $this->json([
+                'success' => true,
+                'id' => (new MediaContentService)->writeContent(
+                    $data,
+                    new MediaContent(),
+                    $entityManager
+                ) ?->getId()
+            ]);
         } else {
             return $this->json([
                 'success' => false,
