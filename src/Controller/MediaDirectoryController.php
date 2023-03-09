@@ -8,6 +8,7 @@ use App\Entity\MediaDirectory;
 use App\Repository\MediaContentRepository;
 use App\Repository\MediaDirectoryRepository;
 use App\Service\MediaDirectoryService;
+use App\Service\QueryHelper;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,6 +19,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/media_directory', name: 'api_')]
 class MediaDirectoryController extends AbstractController
 {
+
+
+    use QueryHelper;
+
     /**
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -60,6 +65,8 @@ class MediaDirectoryController extends AbstractController
         $id
     ): Response
     {
+        $request = new Request($_GET, $_POST, [], $_COOKIE, $_FILES, $_SERVER);
+
         if ((int)$id === 0) {
             $mediaDirectoryService->showTree($mediaDirectoryRepository, $mediaContentRepository);
 
@@ -67,18 +74,63 @@ class MediaDirectoryController extends AbstractController
                 $mediaDirectoryService::$tree
             );
         }
-        $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
-            ->leftJoin('mediaDirectory.mediaContents', 'mediaContents')->addSelect('mediaContents')
-            ->where('mediaDirectory.id = :id')
-            ->setParameters(
-                [
-                    'id' => $id
-                ]
+
+
+        $param = [
+            'id' => $id
+        ];
+
+        if (!empty($request->get('search'))) {
+            $search = mb_strtolower(urldecode($request->get('search')));
+            $param['search'] = $this->makeLikeParam(mb_strtolower($search));
+        }
+
+        if (!empty($id) && $id == 1) {
+            $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
+                ->leftJoin('mediaDirectory.mediaContents', 'mediaContents')->addSelect('mediaContents')
+                ->where('mediaDirectory.id > :id');
+            if (!empty($search)) {
+                $qb->andWhere("LOWER(mediaContents.name) LIKE :search ESCAPE '!'");
+            }
+            $qb->setParameters(
+                $param
             );
-        $result = $qb->getQuery()
-            ->getResult(
-                AbstractQuery::HYDRATE_ARRAY
+            $qb->setMaxResults(30);
+            $result = $qb->getQuery()
+                ->getResult(
+                    AbstractQuery::HYDRATE_ARRAY
+                );
+            $tmp = [
+                "id" => 1,
+                "pid" => 0,
+                "name" => "Общий рубрикатор",
+                "order_number" => 3,
+                "mediaContents" => []
+            ];
+            if (!empty($result)) {
+                foreach ($result as $val) {
+                    if (!empty($val['mediaContents'])) {
+                        $tmp['mediaContents'] = array_merge($tmp['mediaContents'], $val['mediaContents']);
+                    }
+                }
+            }
+            $result = $tmp;
+        } else {
+            $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
+                ->leftJoin('mediaDirectory.mediaContents', 'mediaContents')->addSelect('mediaContents')
+                ->where('mediaDirectory.id = :id');
+            if (!empty($search)) {
+                $qb->andWhere("LOWER(mediaContents.name) LIKE :search ESCAPE '!'");
+            }
+            $qb->setParameters(
+                $param
             );
+            $qb->setMaxResults(30);
+            $result = $qb->getQuery()
+                ->getResult(
+                    AbstractQuery::HYDRATE_ARRAY
+                );
+        }
 
         return $this->json(
             $result

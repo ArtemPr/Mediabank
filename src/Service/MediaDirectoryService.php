@@ -85,6 +85,7 @@ class MediaDirectoryService
             self::$tree[$item->getPid()][] =
                 [
                     'id' => $item->getId(),
+                    'pid' => $item->getPid(),
                     'name' => $item->getName(),
                     'count_elem' => $count['0']['cid'] ?? 0
                 ];
@@ -117,5 +118,9 @@ class MediaDirectoryService
             ->getResult(
                 AbstractQuery::HYDRATE_ARRAY
             );
+    }
+
+    public function getMediaTreeId() {
+
     }
 }
