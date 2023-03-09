@@ -85,7 +85,8 @@ class MediaDirectoryController extends AbstractController
             $param['search'] = $this->makeLikeParam(mb_strtolower($search));
         }
 
-        if (!empty($id) && $id == 1) {
+        if ($id == 999999) {
+            $param['id'] = 1;
             $qb = $mediaDirectoryRepository->createQueryBuilder('mediaDirectory')
                 ->leftJoin('mediaDirectory.mediaContents', 'mediaContents')->addSelect('mediaContents')
                 ->where('mediaDirectory.id > :id');
