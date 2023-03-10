@@ -119,8 +119,4 @@ class MediaDirectoryService
                 AbstractQuery::HYDRATE_ARRAY
             );
     }
-
-    public function getMediaTreeId() {
-
-    }
 }

@@ -29,6 +29,9 @@ class MediaDirectory
     #[ORM\OneToMany(mappedBy: 'directory', targetEntity: MediaContent::class)]
     private Collection $mediaContents;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $level = null;
+
     public function __construct()
     {
         $this->mediaContents = new ArrayCollection();
@@ -101,6 +104,18 @@ class MediaDirectory
                 $mediaContent->setDirectory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLevel(): ?string
+    {
+        return $this->level;
+    }
+
+    public function setLevel(?string $level): self
+    {
+        $this->level = $level;
 
         return $this;
     }
